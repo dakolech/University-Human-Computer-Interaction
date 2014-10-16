@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
 import csv
+import numpy
 
-box_list = []
+pudelkowe = []
 
 def rysowanie(nazwa, styl):
     	with open(nazwa) as csvfile:
@@ -11,23 +12,25 @@ def rysowanie(nazwa, styl):
 		next(csvreader)
 		effort = []
 		run = []
+		
 		for row in csvreader:
-			#print row[2]
 			effort.append(float(row[1])/1000)
 			suma=0
 			for index in range(len(row)):
 				if index>1:
-					#print row[index]
 					suma+=float(row[index])
 			suma/=len(row)-2
 			run.append(suma*100)
-			#print suma
-		box_list.append(suma*100)
-	#print effort
-	#print run
-	
+		
+		wiersz = []
+		for index in range(len(row)):
+		    if index>1:
+		      wiersz.append(float(row[index]))
+		      
+		pudelkowe.append(wiersz)	 
+			
 
-	plt.plot(effort,run, styl)
+	plt.plot(effort,run, styl, markevery=25)
 	
 
 def main():
@@ -37,11 +40,11 @@ def main():
 	
 	wyk1 = plt.subplot(121)
 	
-        rysowanie('rsel.csv', 'b')
-        rysowanie('cel-rs.csv', 'g')
-        rysowanie('2cel-rs.csv', 'r')
-        rysowanie('cel.csv', 'k')
-        rysowanie('2cel.csv', 'm')  
+        rysowanie('rsel.csv', '-bo')
+        rysowanie('cel-rs.csv', '-gv')
+        rysowanie('2cel-rs.csv', '-rD')
+        rysowanie('cel.csv', '-ks')
+        rysowanie('2cel.csv', '-md')  
         
         plt.grid(linewidth=0.5, color='grey')
         plt.axis((0,500,60,100), size="small")
@@ -64,14 +67,20 @@ def main():
         
 	names_list=['1-Evol-RS','1-Coev-RS','2-Coev-RS','1-Coev','2-Coev']
 	
-	plt.subplot(122)
-	plt.boxplot(box_list, notch=True, labels=names_list, showmeans=True, meanprops=dict(marker='o'))
+	wyk3 = plt.subplot(122)
+	plt.boxplot(pudelkowe,True,'b+')
+        wyk3.tick_params(labelsize="small")
+        plt.xticks(range(1,6),names_list,rotation=20,size="x-small")
         frame = plt.gca()
-        plt.grid()
         frame.axes.get_yaxis().set_visible(False)
         plt.twinx()
-        plt.grid()
-        plt.axis([0,6,60,100])
+        plt.grid(linewidth=0.5, color='grey')
+        plt.axis([0,6,60,100], size="small")
+        
+        i = 1
+        for k in pudelkowe:
+            plt.scatter(i,reduce(lambda x, y: x + y, k) / len(k))
+            i += 1
 	
 	
 	plt.savefig('myplot.jpg')
