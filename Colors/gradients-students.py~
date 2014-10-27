@@ -6,6 +6,7 @@ matplotlib.use('Agg')                       # So that we can render files withou
 import matplotlib.pyplot as plt
 from matplotlib import rc
 import numpy as np
+import math 
 
 from matplotlib import colors
 
@@ -41,8 +42,25 @@ def plot_color_gradients(gradients, names):
     fig.savefig('my-gradients.pdf')
 
 def hsv2rgb(h, s, v):
-    #TODO
-    return (h, s, v)
+    if v == 0:
+        return 0, 0, 0
+    else:
+        h *= 6
+        i = min(math.floor(h), 5)
+        f = h - i
+        p = v*(1 - s)
+        q = v*(1 - (s*f))
+        t = v*(1 - (s*(1 - f)))
+        
+        options = {
+            0: (v, t, p),
+            1: (q, v, p),
+            2: (p, v, t),
+            3: (p, q, v),
+            4: (t, p, v),
+            5: (v, p, q),
+        }
+        return options[i]
 
 def gradient_rgb_bw(v):
     return (v, v, v)
@@ -81,33 +99,32 @@ def gradient_rgb_gbr_full(v):
 	else:
 		r=1
     		g=0
-    		b=4*(1-v)#1-4*v-0.01
+    		b=4*(1-v)
     		#print(round(v,2),':',round(r,2),',',round(g,2),',',round(b,2),' ')	
     return (r,g,b)
 
 
 def gradient_rgb_wb_custom(v):
-    #TODO
-    return (0, 0.5,0)
+    r=abs(math.cos(2*v))
+    g=abs(math.sin(4*v))
+    b=abs(math.cos(8*v))
+    return (r,g,b)
 
 
 def gradient_hsv_bw(v):
-    #TODO
-    return hsv2rgb(0, 0, 0)
+    return hsv2rgb(0, 0, v)
 
 
 def gradient_hsv_gbr(v):
-    #TODO
-    return hsv2rgb(0, 0, 0)
+    return hsv2rgb(v+0.3*(1-v), 1, 1)
 
 def gradient_hsv_unknown(v):
-    #TODO
-    return hsv2rgb(0, 0, 0)
+    h=0.34-v/3
+    return hsv2rgb(h, 0.5, 1)
 
 
 def gradient_hsv_custom(v):
-    #TODO
-    return hsv2rgb(0, 0, 0)
+    return hsv2rgb(abs(math.cos(8*v)), math.sqrt(v), abs(math.cos(16*v)))
 
 
 if __name__ == '__main__':
